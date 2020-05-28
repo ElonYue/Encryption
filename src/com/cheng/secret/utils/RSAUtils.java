@@ -1,5 +1,6 @@
 package com.cheng.secret.utils;
 
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -7,19 +8,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.Signature;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,24 +40,27 @@ public class RSAUtils {
      * 加密算法RSA
      */
     public static final String KEY_ALGORITHM = "RSA";
-    public static final String PADDING = "RSA";
+    public static final String PADDING = "RSA/None/PKCS1Padding";
 
     /**
      * 指定key的大小
      */
-    private static int KEYSIZE = 1024;
+    private static final int KEYSIZE = 1024;
 
     /**
      * 签名算法SHA1WithRSA
      */
     public static final String RSA_SHA1 = "SHA1WithRSA";
-
     public static final String RSA_SHA256 = "SHA256withRSA";
+    public static final String RSA_MD5 = "MD5withRSA";
 
     /**
-     * 签名算法MD5withRSA
+     * 签名算法
+     * SHA1WithRSA
+     * SHA256withRSA
+     * MD5withRSA
      */
-    public static final String SIGNATURE_ALGORITHM_MD5 = "MD5withRSA";
+    public static final String SIGNATURE_ALGORITHM = RSA_SHA1;
 
     /**
      * 获取公钥的key
@@ -85,22 +82,26 @@ public class RSAUtils {
      */
     private static final int MAX_DECRYPT_BLOCK = 128;
 
+    public static Map<String, Object> genKeyPair() throws Exception {
+        return genKeyPair(KEYSIZE);
+    }
+
     /**
      * <p>
      * 生成密钥对(公钥和私钥)
      * </p>
      *
-     * @return
-     * @throws Exception
+     * @return 密钥对
+     * @throws Exception Exception
      */
-    public static Map<String, Object> genKeyPair() throws Exception {
-        /** RSA算法要求有一个可信任的随机数源 */
+    public static Map<String, Object> genKeyPair(int keySize) throws Exception {
+        // RSA算法要求有一个可信任的随机数源
         SecureRandom sr = new SecureRandom();
-        /** 为RSA算法创建一个KeyPairGenerator对象 */
+        // 为RSA算法创建一个KeyPairGenerator对象
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
-        /** 利用上面的随机数据源初始化这个KeyPairGenerator对象 */
-        keyPairGen.initialize(KEYSIZE);
-        /** 生成密匙对 */
+        // 利用上面的随机数据源初始化这个KeyPairGenerator对象
+        keyPairGen.initialize(keySize);
+        // 生成密匙对
         KeyPair keyPair = keyPairGen.generateKeyPair();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
@@ -214,9 +215,9 @@ public class RSAUtils {
      */
     public static String sign(String data, String privateKey) throws Exception {
         PrivateKey privateK = getPrivateKey(privateKey);
-        Signature signature = Signature.getInstance(RSA_SHA1);
+        Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
         signature.initSign(privateK);
-        signature.update(data.getBytes("UTF-8"));
+        signature.update(data.getBytes(StandardCharsets.UTF_8));
         return encode(signature.sign());
     }
 
@@ -233,9 +234,9 @@ public class RSAUtils {
      */
     public static boolean verify(String data, String sign, String publicKey) throws Exception {
         PublicKey publicK = getPublicKey(publicKey);
-        Signature signature = Signature.getInstance(RSA_SHA1);
+        Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
         signature.initVerify(publicK);
-        signature.update(data.getBytes("UTF-8"));
+        signature.update(data.getBytes(StandardCharsets.UTF_8));
         return signature.verify(decode(sign));
     }
 
@@ -254,9 +255,6 @@ public class RSAUtils {
         byte[] encryptedData = decode(encrypted);
 
         PrivateKey privateK = getPrivateKey(privateKey);
-
-//        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-
         Cipher cipher = Cipher.getInstance(PADDING);
         cipher.init(Cipher.DECRYPT_MODE, privateK);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -295,9 +293,6 @@ public class RSAUtils {
                                             String publicKey) throws Exception {
         byte[] encryptedData = decode(encryptedStr);
         Key publicK = getPublicKey(publicKey);
-
-//        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-
         Cipher cipher = Cipher.getInstance(PADDING);
         cipher.init(Cipher.DECRYPT_MODE, publicK);
         int inputLen = encryptedData.length;
@@ -335,10 +330,9 @@ public class RSAUtils {
      */
     public static String encryptByPublicKey(String source, String publicKey)
             throws Exception {
-        byte[] data = source.getBytes("UTF-8");
+        byte[] data = source.getBytes(StandardCharsets.UTF_8);
         Key publicK = getPublicKey(publicKey);
         // 对数据加密
-//        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         Cipher cipher = Cipher.getInstance(PADDING);
         cipher.init(Cipher.ENCRYPT_MODE, publicK);
         int inputLen = data.length;
@@ -374,10 +368,8 @@ public class RSAUtils {
      */
     public static String encryptByPrivateKey(String source, String privateKey)
             throws Exception {
-        byte[] data = source.getBytes("UTF-8");
+        byte[] data = source.getBytes(StandardCharsets.UTF_8);
         Key privateK = getPrivateKey(privateKey);
-
-//        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         Cipher cipher = Cipher.getInstance(PADDING);
         cipher.init(Cipher.ENCRYPT_MODE, privateK);
         int inputLen = data.length;
@@ -434,8 +426,10 @@ public class RSAUtils {
      * @throws Exception
      */
     private static byte[] decode(String base64) throws Exception {
-        return Base64.getDecoder().decode(base64);
+        String source = base64.replace("\n", "").replace("\r", "");
+        return java.util.Base64.getDecoder().decode(source);
 //        return new BASE64Decoder().decodeBuffer(base64);
+//        return org.apache.commons.codec.binary.Base64.decodeBase64(base64.replace("\r\n", ""));
     }
 
     /**
@@ -446,8 +440,10 @@ public class RSAUtils {
      * @throws Exception
      */
     private static String encode(byte[] bytes) throws Exception {
-        return Base64.getEncoder().encodeToString(bytes);
+        String dest = java.util.Base64.getEncoder().encodeToString(bytes);
+        return dest.replace("\n", "").replace("\r", "");
 //        return new BASE64Encoder().encode(bytes);
+//        return org.apache.commons.codec.binary.Base64.encodeBase64String(bytes).replace("\r\n", "");
     }
 
 }

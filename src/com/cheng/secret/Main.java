@@ -4,6 +4,7 @@ import com.apple.eawt.Application;
 
 import javax.swing.*;
 import java.awt.*;
+import java.security.Security;
 
 public class Main {
     private static final int WIDTH = 800;
@@ -23,6 +24,7 @@ public class Main {
 
 
     public static void main(String[] args) {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         init(WIDTH, HEIGHT);
     }
 
