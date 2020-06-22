@@ -20,6 +20,7 @@ public class EncryptForm {
                     resultTextArea.setText(result);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                    resultTextArea.setText(ex.getMessage());
                 }
             }
         });
@@ -33,6 +34,7 @@ public class EncryptForm {
                     resultTextArea.setText(result);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                    resultTextArea.setText(ex.getMessage());
                 }
             }
         });

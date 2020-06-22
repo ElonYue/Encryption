@@ -22,7 +22,7 @@ public class GeneratorRSAKeyPair {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int keyLen = a2048RadioButton.isSelected() ? 2048 : 1024;
+                    int keyLen = a1024RadioButton.isSelected() ? 1024 : 2048;
                     Map<String, Object> keyMap = RSAUtils.genKeyPair(keyLen);
                     publicKey = RSAUtils.getPublicKey(keyMap);
                     privateKey = RSAUtils.getPrivateKey(keyMap);
