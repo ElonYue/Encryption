@@ -16,8 +16,8 @@ public class DecryptForm {
                 String source = sourceTextArea.getText();
                 String key = keyTextArea.getText();
                 try {
-                    byte[] result = RSAUtils.decryptByPrivateKey(source, key);
-                    resultTextArea.setText(new String(result));
+                    String result = RSAUtils.decryptByPrivateKey(source, key);
+                    resultTextArea.setText(result);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -31,8 +31,8 @@ public class DecryptForm {
                 String source = sourceTextArea.getText();
                 String key = keyTextArea.getText();
                 try {
-                    byte[] result = RSAUtils.decryptByPublicKey(source, key);
-                    resultTextArea.setText(new String(result));
+                    String result = RSAUtils.decryptByPublicKey(source, key);
+                    resultTextArea.setText(result);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

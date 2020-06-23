@@ -251,7 +251,7 @@ public class RSAUtils {
      * @return
      * @throws Exception
      */
-    public static byte[] decryptByPrivateKey(String encrypted, String privateKey)
+    public static String decryptByPrivateKey(String encrypted, String privateKey)
             throws Exception {
         byte[] encryptedData = decode(encrypted);
 
@@ -277,7 +277,7 @@ public class RSAUtils {
         }
         byte[] decryptedData = out.toByteArray();
         out.close();
-        return decryptedData;
+        return new String(decryptedData, StandardCharsets.UTF_8);
     }
 
     /**
@@ -290,7 +290,7 @@ public class RSAUtils {
      * @return
      * @throws Exception
      */
-    public static byte[] decryptByPublicKey(String encryptedStr,
+    public static String decryptByPublicKey(String encryptedStr,
                                             String publicKey) throws Exception {
         byte[] encryptedData = decode(encryptedStr);
         Key publicK = getPublicKey(publicKey);
@@ -316,7 +316,7 @@ public class RSAUtils {
         }
         byte[] decryptedData = out.toByteArray();
         out.close();
-        return decryptedData;
+        return new String(decryptedData, StandardCharsets.UTF_8);
     }
 
     /**
@@ -441,8 +441,8 @@ public class RSAUtils {
      * @throws Exception
      */
     private static String encode(byte[] bytes) throws Exception {
-        String dest = java.util.Base64.getEncoder().encodeToString(bytes);
-        return dest.replace("\n", "").replace("\r", "");
+        byte[] dest = java.util.Base64.getEncoder().encode(bytes);
+        return new String(dest,StandardCharsets.UTF_8).replace("\n", "").replace("\r", "");
 //        return new BASE64Encoder().encode(bytes);
 //        return org.apache.commons.codec.binary.Base64.encodeBase64String(bytes).replace("\r\n", "");
     }

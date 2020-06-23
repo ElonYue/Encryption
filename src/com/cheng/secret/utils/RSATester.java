@@ -64,8 +64,7 @@ public class RSATester {
         System.out.println("加密前文字：\r\n" + source);
         String encodedData = RSAUtils.encryptByPublicKey(source, publicKey);
         System.out.println("加密后文字：\r\n" + new String(encodedData));
-        byte[] decodedData = RSAUtils.decryptByPrivateKey(encodedData,  privateKey);
-        String target = new String(decodedData);
+        String target = RSAUtils.decryptByPrivateKey(encodedData,  privateKey);
         System.out.println("解密后文字: \r\n" + target);
     }
 
@@ -76,8 +75,7 @@ public class RSATester {
         System.out.println("原文字：\r\n" + source);
         String encodedData = RSAUtils.encryptByPrivateKey(source, privateKey);
         System.out.println("加密后：\r\n" + encodedData);
-        byte[] decodedData = RSAUtils.decryptByPublicKey(encodedData, publicKey);
-        String target = new String(decodedData);
+        String target = RSAUtils.decryptByPublicKey(encodedData, publicKey);
         System.out.println("解密后: \r\n" + target);
 
     }
