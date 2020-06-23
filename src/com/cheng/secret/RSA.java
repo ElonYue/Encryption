@@ -18,6 +18,7 @@ public class RSA {
     private JPanel decrypt;
     private JPanel sign;
     private JPanel verify;
+    private JPanel urldecode;
 
     private void createUIComponents() {
         GeneratorRSAKeyPair rsaKeyPair = new GeneratorRSAKeyPair();
@@ -34,5 +35,8 @@ public class RSA {
 
         VerifyForm verifyForm = new VerifyForm();
         verify = verifyForm.getPanel();
+
+        URLDecodeForm urldecodeForm = new URLDecodeForm();
+        urldecode = urldecodeForm.getPanel();
     }
 }
