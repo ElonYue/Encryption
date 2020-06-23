@@ -1,0 +1,1 @@
+zip -d Encryption.jar 'META-INF/.SF' 'META-INF/.RSA' 'META-INF/*SF'
